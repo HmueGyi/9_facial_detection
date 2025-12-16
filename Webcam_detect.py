@@ -44,7 +44,6 @@ def load_model(model_path, device):
     num_ftrs = model.fc.in_features
     model.fc = nn.Sequential(
         nn.Linear(num_ftrs, 128),
-        nn.BatchNorm1d(128),
         nn.ReLU(),
         nn.Dropout(p=0.3),
         nn.Linear(128, num_classes)
