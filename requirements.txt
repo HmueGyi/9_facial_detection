@@ -1,16 +1,16 @@
-# =============================================================================
-# Facial Emotion Detection - Requirements
-# =============================================================================
+# Pip-only alternative to Conda (see environment.yml for the recommended setup).
 # Install: pip install -r requirements.txt
-# =============================================================================
 
 # Core Deep Learning
 torch>=2.0.0
 torchvision>=0.15.0
-torchaudio>=2.0.0
 
 # Face Detection
-facenet-pytorch>=2.5.2
+mediapipe==0.10.14
+
+# Dataset Integration
+roboflow>=1.1.0
+python-dotenv>=1.0.0
 
 # Image Processing
 opencv-python>=4.8.0
@@ -30,6 +30,3 @@ tqdm>=4.65.0
 # Jupyter Notebook
 jupyter>=1.0.0
 nbconvert>=7.0.0
-
-# Optional: Parameterized Notebook Execution
-# papermill>=2.4.0

@@ -1,230 +1,221 @@
-# 🎭 Facial Emotion Detection
+# Facial Emotion Detection
 
-A deep learning project for real-time facial emotion detection using **PyTorch** and **ResNet-50** transfer learning.
+Real-time facial emotion detection using:
+- **MediaPipe** for face detection
+- **EfficientNet-V2-S (PyTorch)** for emotion classification
 
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
-![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-red)
-![License](https://img.shields.io/badge/License-MIT-green)
+This repository is built for two tasks:
+1. **Train** a model on Kaggle (`notebooks/facial-training-efficientnet.ipynb`)
+2. **Run inference** locally (`src/webcam_detect.py`)
 
----
+## 1. Project Structure
 
-## Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Emotion Classes](#emotion-classes)
-- [Project Structure](#project-structure)
-- [Quick Start](#quick-start)
-- [Training](#training)
-- [Inference](#inference)
-- [Results](#results)
-- [Documentation](#documentation)
-- [Author](#author)
-
----
-
-## Overview
-
-This project implements a **9-class facial emotion classifier** that can:
-- Train on custom facial expression datasets
-- Perform real-time emotion detection via webcam
-- Predict emotions from image files
-
-**Key Technologies:**
-- **ResNet-50** pretrained on ImageNet (transfer learning)
-- **MTCNN** for face detection (in webcam mode)
-- **PyTorch** for deep learning
-- **OpenCV** for video processing
-
----
-
-## Features
-
-| Feature | Description |
-|---------|-------------|
-| 🧠 Transfer Learning | Fine-tuned ResNet-50 with frozen early layers |
-| ⚖️ Class Balancing | Weighted loss function for imbalanced datasets |
-| 📈 Early Stopping | Prevents overfitting by monitoring validation loss |
-| 🎛️ LR Scheduling | `ReduceLROnPlateau` for adaptive learning rate |
-| 📹 Real-time Detection | Webcam-based emotion detection with MTCNN |
-| 💾 Best Model Saving | Automatically saves the best performing model |
-| 📊 Visualization | Confusion matrix, loss plots, prediction samples |
-
----
-
-## Emotion Classes
-
-| ID | Emotion | ID | Emotion |
-|----|---------|----|---------|
-| 0 | Angry | 5 | Natural |
-| 1 | Contempt | 6 | Sad |
-| 2 | Disgust | 7 | Sleepy |
-| 3 | Fear | 8 | Surprised |
-| 4 | Happy | | |
-
----
-
-## Project Structure
-
-```
-9_facial_detection/
-├── README.md                      # This file
-├── INSTALL.md                     # Installation guide
-├── ARCHITECTURE.md                # Model architecture details
-├── Emotion_detection_Train.ipynb  # Training notebook
-├── Webcam_detect.py               # Real-time webcam detection script
-├── best_model.pth                 # Trained model weights
-└── data/                          # Dataset (not included)
-    ├── train/
-    │   ├── images/
-    │   └── labels/
-    ├── valid/
-    │   ├── images/
-    │   └── labels/
-    └── test/
-        ├── images/
-        └── labels/
+```text
+src/
+  webcam_detect.py
+  models/emotion_model.py
+notebooks/
+  facial-training-efficientnet.ipynb
+weights/
+  .gitkeep
+  best_emotion_model.pth
+scripts/
+  run_webcam.sh
+  run_webcam.bat
+setup.sh
+setup.bat
+environment.yml
+requirements.txt
+docs/
+  ARCHITECTURE.md
+  INSTALL.md
 ```
 
----
+## 2. Local Inference (Step by Step)
 
-## Quick Start
+### Step 1: Create environment
 
-### 1. Clone and Install
+Linux/macOS:
 
 ```bash
-cd /home/mr_robot/Desktop/RestNet/9_facial_detection
-pip install -r requirements.txt  # or see INSTALL.md
+./setup.sh
+conda activate facial-emotion
 ```
 
-### 2. Run Webcam Detection (with pretrained model)
+Windows:
+
+```bat
+setup.bat
+conda activate facial-emotion
+```
+
+### Step 2: Put model weights in the correct path
+
+```text
+weights/best_emotion_model.pth
+```
+
+### Step 3: Run webcam inference
 
 ```bash
-python3 Webcam_detect.py --model best_model.pth --source 0
+python src/webcam_detect.py --source 0
 ```
 
-### 3. Train Your Own Model
+Press `q` to close the preview window.
+
+## 3. Training on Kaggle (Step by Step)
+
+### Step 1: Open notebook
+
+Open:
+
+```text
+notebooks/facial-training-efficientnet.ipynb
+```
+
+in Kaggle Notebook.
+
+### Step 2: Enable GPU
+
+In Kaggle notebook settings, enable **GPU** accelerator.
+
+### Step 3: Add Roboflow secrets
+
+In **Add-ons -> Secrets**, add:
+- `ROBOFLOW_API_KEY`
+- `ROBOFLOW_WORKSPACE`
+- `ROBOFLOW_PROJECT`
+- `ROBOFLOW_VERSION` (use `1` if you are using version 1)
+
+### Step 4: Run all cells
+
+After training finishes, download:
+
+```text
+best_emotion_model.pth
+```
+
+### Step 5: Move the model to local project
+
+Place downloaded file here:
+
+```text
+weights/best_emotion_model.pth
+```
+
+Then run local inference (Section 2).
+
+## 4. Roboflow Setup (Simple)
+
+Use this rule: **set values in one place only**.
+- Kaggle training -> set in **Kaggle Secrets**
+- Local training -> set in **`.env`**
+
+Required keys:
+- `ROBOFLOW_API_KEY`
+- `ROBOFLOW_WORKSPACE`
+- `ROBOFLOW_PROJECT`
+- `ROBOFLOW_VERSION` (default is `1`)
+
+The notebook already reads them using `os.getenv(...)`, so you usually do **not** need to edit notebook code.
+
+How to find each value:
+1. `ROBOFLOW_API_KEY`
+   - Go to Roboflow -> profile menu -> **Settings** -> **API**.
+   - Copy your **Private API Key**.
+2. `ROBOFLOW_WORKSPACE`
+   - Open your project page in browser.
+   - In URL `https://app.roboflow.com/<workspace>/<project>/...`, the first part is workspace.
+3. `ROBOFLOW_PROJECT`
+   - In the same URL, the second part is project.
+4. `ROBOFLOW_VERSION`
+   - Open the dataset **Versions** page in Roboflow.
+   - Use the version number you exported/trained on (for example `1`, `2`, `3`).
+
+Example URL:
+
+```text
+https://app.roboflow.com/hmue/face-emotion-classification-bg4ho/1
+```
+
+Then:
+- `ROBOFLOW_WORKSPACE=hmue`
+- `ROBOFLOW_PROJECT=face-emotion-classification-bg4ho`
+- `ROBOFLOW_VERSION=1`
+
+Example `.env`:
 
 ```bash
-jupyter notebook Emotion_detection_Train.ipynb
+ROBOFLOW_API_KEY=your_api_key
+ROBOFLOW_WORKSPACE=your_workspace
+ROBOFLOW_PROJECT=your_project
+ROBOFLOW_VERSION=1
 ```
 
----
+Do not commit `.env`.
 
-## Training
+Quick inline option (works for training, but **not recommended for commit**):
 
-### Using Jupyter Notebook (Interactive)
+```python
+ROBOFLOW_API_KEY = os.getenv("ROBOFLOW_API_KEY", "your-api-key")
+ROBOFLOW_WORKSPACE = os.getenv("ROBOFLOW_WORKSPACE", "hmue")
+ROBOFLOW_PROJECT = os.getenv("ROBOFLOW_PROJECT", "face-emotion-classification-bg4ho")
+ROBOFLOW_VERSION = int(os.getenv("ROBOFLOW_VERSION", "1"))
+EXPORT_FORMAT = "folder"
+```
+
+## 5. CLI Options
+
+| Flag | Meaning | Default |
+|---|---|---|
+| `--model-path` | Path to model checkpoint | `weights/best_emotion_model.pth` |
+| `--source` | Camera index (`0`, `1`, ...) or video path | `0` |
+| `--device` | `auto`, `cpu`, `cuda` | `auto` |
+| `--conf` | Face detection confidence | `0.5` |
+| `--save-to` | Save annotated output video | disabled |
+
+## 6. Troubleshooting
+
+### `Error loading model` (missing/unexpected keys)
+
+The loader in `src/models/emotion_model.py` already adapts common checkpoint key formats (`backbone.*`, raw keys, `module.*`).
+
+### `AttributeError: module 'mediapipe' has no attribute 'solutions'`
+
+Reinstall MediaPipe in active environment:
 
 ```bash
-jupyter notebook Emotion_detection_Train.ipynb
+pip uninstall -y mediapipe mediapipe-nightly
+pip install mediapipe==0.10.14
 ```
 
-### Using nbconvert (Headless)
+### Webcam does not open
+
+- Try `--source 1` (or `2`)
+- Close other camera apps
+- Check OS camera permissions
+
+### Missing packages
 
 ```bash
-jupyter nbconvert --to notebook --execute Emotion_detection_Train.ipynb --output executed.ipynb
+conda activate facial-emotion
 ```
 
-### Key Training Parameters
-
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `num_epochs` | 15 | Number of training epochs |
-| `batch_size` | 32 | Images per batch |
-| `lr` | 0.0001 | Learning rate |
-| `patience` | 3 | Early stopping patience |
-| `image_size` | 224 | Input image size |
-
----
-
-## Inference
-
-### Webcam Detection
+or:
 
 ```bash
-# Default webcam (index 0)
-python3 Webcam_detect.py
-
-# Specify camera and device
-python3 Webcam_detect.py --source 1 --device cuda
-
-# Process a video file and save output
-python3 Webcam_detect.py --source video.mp4 --save-output output.mp4
-
-# Adjust confidence threshold
-python3 Webcam_detect.py --conf 0.7
+pip install -r requirements.txt
 ```
 
-### CLI Options for Webcam_detect.py
+## 7. Current Class Labels
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--model` | `best_model.pth` | Path to model weights |
-| `--source` | `0` | Camera index or video path |
-| `--device` | `auto` | `auto`, `cpu`, or `cuda` |
-| `--conf` | `0.5` | Min face detection confidence |
-| `--save-output` | - | Save annotated video to path |
-| `--width` | - | Capture width |
-| `--height` | - | Capture height |
+Current model labels are:
 
----
+`['angry', 'happy', 'neutral', 'sad', 'suprised', 'tired']`
 
-## Results
+`suprised` is intentionally kept to match dataset folder naming.
 
-After training, you'll get:
+## 8. Notes
 
-1. **`best_model.pth`** - Saved model weights
-2. **Training/Validation Loss Plot** - Overfitting detection
-3. **Confusion Matrix** - Per-class accuracy visualization
-4. **Sample Predictions** - Visual inspection of results
-
----
-
-## Documentation
-
-| Document | Description |
-|----------|-------------|
-| [INSTALL.md](INSTALL.md) | Installation guide and dependencies |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Model architecture and design details |
-| [Emotion_detection_Train.ipynb](Emotion_detection_Train.ipynb) | Annotated training notebook |
-
----
-
-## 🛠️ Quick Commands
-
-```bash
-# Check GPU availability
-python3 -c "import torch; print('CUDA:', torch.cuda.is_available())"
-
-# Count dataset images
-ls data/train/images | wc -l
-
-# Preview a label file
-head -n 1 data/train/labels/$(ls data/train/labels | head -n1)
-
-# Run webcam detection
-python3 Webcam_detect.py --source 0 --device auto
-```
-
----
-
-## Author
-
-**Hmue_Gyi**  
-Launch Date: April 2025  
-Framework: PyTorch + torchvision
-
----
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## Acknowledgments
-
-- [PyTorch](https://pytorch.org/) - Deep learning framework
-- [torchvision](https://pytorch.org/vision/) - Pretrained ResNet models
-- [facenet-pytorch](https://github.com/timesler/facenet-pytorch) - MTCNN face detection
-- [OpenCV](https://opencv.org/) - Computer vision library
+- Recommended Python version: `3.10` to `<3.13`.
+- `weights/*.pth` is git-ignored by design.

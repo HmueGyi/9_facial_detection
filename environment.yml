@@ -1,0 +1,24 @@
+# Conda environment: facial-emotion
+# Create: conda env create -f environment.yml
+# Update:  conda env update -f environment.yml --prune
+name: facial-emotion
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.10,<3.13
+  - pip
+  - numpy>=1.24
+  - scikit-learn>=1.2
+  - matplotlib>=3.7
+  - seaborn>=0.12
+  - tqdm>=4.65
+  - jupyter>=1.0
+  - nbconvert>=7
+  - pillow>=9
+  - pip:
+    - torch>=2.0.0
+    - torchvision>=0.15.0
+    - mediapipe==0.10.14
+    - opencv-python>=4.8.0
+    - roboflow>=1.1.0
+    - python-dotenv>=1.0.0
