@@ -8,6 +8,8 @@ This repository is built for two tasks:
 1. **Train** a model on Kaggle (`notebooks/facial-training-efficientnet.ipynb`)
 2. **Run inference** locally (`src/webcam_detect.py`)
 
+Training result images: [results/](results/)
+
 ## 1. Project Structure
 
 ```text
@@ -16,6 +18,11 @@ src/
   models/emotion_model.py
 notebooks/
   facial-training-efficientnet.ipynb
+results/
+  loss_and_accuracy.png
+  loss_curve_and_accuracy_curve.png
+  confusion_matixes.png
+  random_validation_prediction.png
 weights/
   .gitkeep
   best_emotion_model.pth
@@ -89,7 +96,9 @@ In **Add-ons -> Secrets**, add:
 
 ### Step 4: Run all cells
 
-After training finishes, download:
+After training finishes:
+- Save/export training visual outputs to `results/` (loss curve, accuracy curve, confusion matrix, sample predictions).
+- Download model weights:
 
 ```text
 best_emotion_model.pth
@@ -104,6 +113,12 @@ weights/best_emotion_model.pth
 ```
 
 Then run local inference (Section 2).
+
+Training output images are kept in:
+
+```text
+results/
+```
 
 ## 4. Roboflow Setup (Simple)
 
